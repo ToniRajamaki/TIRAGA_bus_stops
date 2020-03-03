@@ -61,6 +61,7 @@ void Datastructures::clear_all()
 
 std::vector<StopID> Datastructures::all_stops()
 {
+    stopIDs_.clear();
     for(auto stop:stops_){
         stopIDs_.push_back(stop.first);
     }
@@ -196,14 +197,29 @@ StopID Datastructures::max_coord()
 
 std::vector<StopID> Datastructures::find_stops(Name const& name)
 {
-    // Replace this comment and the line below with your implementation
-    return {NO_STOP};
+    std::vector<StopID> stopIDsWithSameName = {};
+
+    for(auto stop:stops_){
+
+        if(name == stop.second.Name){
+            stopIDsWithSameName.push_back(stop.first);
+        }
+    }
+    if(stopIDsWithSameName.size()==0){
+        return {NO_STOP};
+    } return stopIDsWithSameName;
 }
 
 bool Datastructures::change_stop_name(StopID id, const Name& newname)
 {
-    // Replace this comment and the line below with your implementation
-    return false;
+
+    if(stops_.find(id)!=stops_.end()){
+        stops_.at(id).Name = newname;
+        return true;
+    }else{
+        return false;
+    }
+
 }
 
 bool Datastructures::change_stop_coord(StopID id, Coord newcoord)
