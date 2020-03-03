@@ -174,14 +174,25 @@ private:
         StopID StopID;
         Name Name;
         Coord Coord;
+        RegionID belongsToRegion = NO_REGION;
+    };
+
+
+
+    struct Region{
+        Name name;
+        RegionID parentRegion = NO_REGION;
+        std::vector<StopID> stops = {};
+        std::vector<RegionID> subRegions = {}; //children
     };
 
 
 
 
+    std::unordered_map<RegionID,Region> regions_;
+    std::vector<RegionID> regionIDs_;
 
-
-    std::unordered_map<int,Stop> stops_;
+    std::unordered_map<StopID,Stop> stops_;
     std::vector<StopID> stopIDs_;
     std::vector<StopID> orderedStopIDsByName;
 

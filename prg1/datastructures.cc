@@ -45,17 +45,17 @@ int Datastructures::stop_count()
 {
     int number_of_stops = 0;
     number_of_stops = static_cast<int>(stops_.size());
-    if(number_of_stops == 0){
-        return NO_VALUE;
-    }else{
-        return number_of_stops;
-    }
+    return number_of_stops;
 }
+
 
 void Datastructures::clear_all()
 {
     stops_.clear();
+    regions_.clear();
+    regionIDs_.clear();
     stopIDs_.clear();
+    orderedStopIDsByName.clear();
     // Replace this comment with your implementation
 }
 
@@ -65,12 +65,10 @@ std::vector<StopID> Datastructures::all_stops()
     for(auto stop:stops_){
         stopIDs_.push_back(stop.first);
     }
-    if(stopIDs_.size()==0){
-        return {NO_STOP};
-    }else{
-        return stopIDs_;
-    }
+
+    return stopIDs_;
 }
+
 
 bool Datastructures::add_stop(StopID id, const Name& name, Coord xy)
 {
@@ -224,44 +222,105 @@ bool Datastructures::change_stop_name(StopID id, const Name& newname)
 
 bool Datastructures::change_stop_coord(StopID id, Coord newcoord)
 {
-    // Replace this comment and the line below with your implementation
-    return false;
+
+    if(stops_.find(id)!=stops_.end()){
+        stops_.at(id).Coord.x = newcoord.x;
+        stops_.at(id).Coord.y = newcoord.y;
+        return true;
+    }else{
+        return false;
+    }
+
 }
 
 bool Datastructures::add_region(RegionID id, const Name &name)
 {
-    // Replace this comment and the line below with your implementation
-    return false;
+
+
+    struct Region region = {name};
+    if(regions_.find(id)!=regions_.end()){
+        return false;
+    }
+    regions_.insert({id,region});
+
+
+    return true;
+
 }
 
 Name Datastructures::get_region_name(RegionID id)
 {
-    // Replace this comment and the line below with your implementation
-    return NO_NAME;
+    if(regions_.find(id)!=regions_.end()){
+        return regions_.at(id).name;
+    }else{
+        return NO_NAME;
+    }
 }
 
 std::vector<RegionID> Datastructures::all_regions()
 {
-    // Replace this comment and the line below with your implementation
-    return {NO_REGION};
+
+    regionIDs_.clear();
+    for(auto region:regions_){
+        regionIDs_.push_back(region.first);
+    }
+    if(regionIDs_.size()==0){
+        return {NO_REGION};
+    }else{
+        return regionIDs_;
+    }
+
 }
 
 bool Datastructures::add_stop_to_region(StopID id, RegionID parentid)
 {
-    // Replace this comment and the line below with your implementation
-    return false;
+
+    if(regions_.find(parentid)!=regions_.end() and
+            stops_.find(id)!= stops_.end()){
+        if(stops_.at(id).belongsToRegion != NO_REGION){
+            return false;
+        }
+    }
+    regions_.at(parentid).stops.push_back(id);
+    stops_.at(id).belongsToRegion = parentid;
+    return true;
+
+
 }
 
 bool Datastructures::add_subregion_to_region(RegionID id, RegionID parentid)
 {
-    // Replace this comment and the line below with your implementation
-    return false;
+    if(regions_.find(parentid)==regions_.end() or
+            regions_.find(id)==regions_.end()){
+        return false;
+    }else{
+        if(regions_.at(id).parentRegion != NO_REGION){
+            return false;
+        }
+    }
+
+    regions_.at(parentid).subRegions.push_back(id);
+    regions_.at(id).parentRegion = parentid;
+    return true;
 }
+
+
 
 std::vector<RegionID> Datastructures::stop_regions(StopID id)
 {
-    // Replace this comment and the line below with your implementation
-    return {NO_REGION};
+    std::vector<RegionID> regions = {};
+
+    if(stops_.find(id)==stops_.end()){
+        return regions;
+    }
+    RegionID currentParent =stops_.at(id).belongsToRegion;
+    regions.push_back(currentParent);
+
+    while(regions_.at(currentParent).parentRegion != NO_REGION){
+        currentParent = regions_.at(currentParent).parentRegion;
+        regions.push_back(currentParent);
+    }
+    return regions;
 }
 
 void Datastructures::creation_finished()
