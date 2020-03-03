@@ -8,6 +8,13 @@
 
 std::minstd_rand rand_engine; // Reasonably quick pseudo-random generator
 
+double distance_from_origin(Coord c){
+    return(sqrt( (c.x)*(c.x) + (c.y)*(c.y) ));
+}
+
+
+
+
 template <typename Type>
 Type random_in_range(Type start, Type end)
 {
@@ -71,6 +78,7 @@ bool Datastructures::add_stop(StopID id, const Name& name, Coord xy)
         return false;
     }
     stops_.insert({id,stop});
+
     return true;
 
 }
@@ -97,14 +105,56 @@ Coord Datastructures::get_stop_coord(StopID id)
 
 std::vector<StopID> Datastructures::stops_alphabetically()
 {
-    // Replace this comment and the line below with your implementation
-    return {NO_STOP};
+    std::vector<Stop> vector_stops;
+    std::vector<long int> ordered_stopIDs;
+
+    for(auto stop : stops_){
+        vector_stops.push_back(stop.second);
+    }
+
+
+    std::sort(vector_stops.begin(), vector_stops.end(),
+              [](const Stop &a,const Stop &b){
+        return a.Name>b.Name;
+    });
+
+    for(auto stop:vector_stops){
+        ordered_stopIDs.push_back(stop.StopID);
+    }
+    if(ordered_stopIDs.size() == 0){
+        return {NO_STOP};
+    }else{
+        return ordered_stopIDs;
+    }
+
 }
 
 std::vector<StopID> Datastructures::stops_coord_order()
 {
-    // Replace this comment and the line below with your implementation
-    return {NO_STOP};
+
+
+    std::vector<Stop> vector_stops;
+    std::vector<long int> ordered_stopIDs;
+
+    for(auto stop : stops_){
+        vector_stops.push_back(stop.second);
+    }
+
+    std::sort(vector_stops.begin(), vector_stops.end(),
+              [](const Stop &a,const Stop &b){
+        return distance_from_origin(a.Coord)<distance_from_origin(b.Coord);
+    });
+
+
+    for(auto stop:vector_stops){
+        ordered_stopIDs.push_back(stop.StopID);
+    }
+    if(ordered_stopIDs.size() == 0){
+        return {NO_STOP};
+    }else{
+        return ordered_stopIDs;
+    }
+
 }
 
 StopID Datastructures::min_coord()
@@ -202,3 +252,4 @@ RegionID Datastructures::stops_common_region(StopID id1, StopID id2)
     // Replace this comment and the line below with your implementation
     return NO_REGION;
 }
+

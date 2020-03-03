@@ -9,6 +9,7 @@
 #include <limits>
 #include <list>
 #include <unordered_map>
+#include <algorithm>
 
 
 // Types for IDs
@@ -175,8 +176,14 @@ private:
         Coord Coord;
     };
 
+
+
+
+
+
     std::unordered_map<int,Stop> stops_;
     std::vector<StopID> stopIDs_;
+    std::vector<StopID> orderedStopIDsByName;
 
 };
 
