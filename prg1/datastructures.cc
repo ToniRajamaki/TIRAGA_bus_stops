@@ -74,7 +74,7 @@ std::vector<StopID> Datastructures::all_stops()
 bool Datastructures::add_stop(StopID id, const Name& name, Coord xy)
 {
     struct Stop stop = {id,name,xy};
-    if(stops_.count(id)){
+    if(stops_.find(id)!=stops_.end()){
         return false;
     }
     stops_.insert({id,stop});
@@ -115,7 +115,7 @@ std::vector<StopID> Datastructures::stops_alphabetically()
 
     std::sort(vector_stops.begin(), vector_stops.end(),
               [](const Stop &a,const Stop &b){
-        return a.Name>b.Name;
+        return a.Name<b.Name;
     });
 
     for(auto stop:vector_stops){
@@ -159,14 +159,39 @@ std::vector<StopID> Datastructures::stops_coord_order()
 
 StopID Datastructures::min_coord()
 {
-    // Replace this comment and the line below with your implementation
-    return NO_STOP;
+    StopID stopId = -1;
+    double min_distance = 1000;
+    if(stops_.size()==0){
+        return NO_STOP;
+    }
+
+    for(auto stop:stops_){
+        if(distance_from_origin(stop.second.Coord)< min_distance){
+            min_distance = distance_from_origin(stop.second.Coord);
+            stopId = stop.first;
+        }
+
+    }return stopId;
+
+
+
 }
 
 StopID Datastructures::max_coord()
 {
-    // Replace this comment and the line below with your implementation
-    return NO_STOP;
+    StopID stopId = -1;
+    double max_distance = -1;
+    if(stops_.size()==0){
+        return NO_STOP;
+    }
+
+    for(auto stop:stops_){
+        if(distance_from_origin(stop.second.Coord)> max_distance){
+            max_distance = distance_from_origin(stop.second.Coord);
+            stopId = stop.first;
+        }
+
+    }return stopId;
 }
 
 std::vector<StopID> Datastructures::find_stops(Name const& name)
