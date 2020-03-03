@@ -36,37 +36,63 @@ Datastructures::~Datastructures()
 
 int Datastructures::stop_count()
 {
-    // Replace this comment and the line below with your implementation
-    return NO_VALUE;
+    int number_of_stops = 0;
+    number_of_stops = static_cast<int>(stops_.size());
+    if(number_of_stops == 0){
+        return NO_VALUE;
+    }else{
+        return number_of_stops;
+    }
 }
 
 void Datastructures::clear_all()
 {
+    stops_.clear();
+    stopIDs_.clear();
     // Replace this comment with your implementation
 }
 
 std::vector<StopID> Datastructures::all_stops()
 {
-    // Replace this comment and the line below with your implementation
-    return {NO_STOP};
+    for(auto stop:stops_){
+        stopIDs_.push_back(stop.first);
+    }
+    if(stopIDs_.size()==0){
+        return {NO_STOP};
+    }else{
+        return stopIDs_;
+    }
 }
 
 bool Datastructures::add_stop(StopID id, const Name& name, Coord xy)
 {
-    // Replace this comment and the line below with your implementation
-    return false;
+    struct Stop stop = {id,name,xy};
+    if(stops_.count(id)){
+        return false;
+    }
+    stops_.insert({id,stop});
+    return true;
+
 }
 
 Name Datastructures::get_stop_name(StopID id)
 {
-    // Replace this comment and the line below with your implementation
-    return NO_NAME;
+
+    if(stops_.find(id)!=stops_.end()){
+        return stops_.at(id).Name;
+    }else{
+        return NO_NAME;
+    }
 }
 
 Coord Datastructures::get_stop_coord(StopID id)
 {
-    // Replace this comment and the line below with your implementation
-    return NO_COORD;
+
+    if(stops_.find(id)!=stops_.end()){
+        return stops_.at(id).Coord;
+    }else{
+        return NO_COORD;
+    }
 }
 
 std::vector<StopID> Datastructures::stops_alphabetically()

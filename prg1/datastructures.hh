@@ -7,6 +7,9 @@
 #include <vector>
 #include <utility>
 #include <limits>
+#include <list>
+#include <unordered_map>
+
 
 // Types for IDs
 using StopID = long int;
@@ -66,6 +69,11 @@ public:
 
     // Estimate of performance:
     // Short rationale for estimate:
+    /*!
+     * \brief all_stops, luo stops tietorakenteesta vectorin johon vie stopID:t
+     * \return palautattaa luodun stopIDs vectorin, tai constin NO_STOPS jos
+     * stopIDs size on 0
+     */
     std::vector<StopID> all_stops();
 
     // Estimate of performance:
@@ -160,6 +168,15 @@ public:
 
 private:
     // Add stuff needed for your class implementation here
+
+    struct Stop{
+        StopID StopID;
+        Name Name;
+        Coord Coord;
+    };
+
+    std::unordered_map<int,Stop> stops_;
+    std::vector<StopID> stopIDs_;
 
 };
 
