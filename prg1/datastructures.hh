@@ -200,9 +200,9 @@ private:
 
 
     struct Stop{
-        StopID StopID;
-        Name Name;
-        Coord Coord;
+        StopID stopID;
+        Name name;
+        Coord coord;
         RegionID belongsToRegion = NO_REGION;
     };
 

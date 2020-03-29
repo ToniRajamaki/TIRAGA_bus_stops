@@ -86,7 +86,7 @@ Name Datastructures::get_stop_name(StopID id)
 {
 
     if(stops_.find(id)!=stops_.end()){
-        return stops_.at(id).Name;
+        return stops_.at(id).name;
     }else{
         return NO_NAME;
     }
@@ -96,7 +96,7 @@ Coord Datastructures::get_stop_coord(StopID id)
 {
 
     if(stops_.find(id)!=stops_.end()){
-        return stops_.at(id).Coord;
+        return stops_.at(id).coord;
     }else{
         return NO_COORD;
     }
@@ -114,11 +114,11 @@ std::vector<StopID> Datastructures::stops_alphabetically()
 
     std::sort(vector_stops.begin(), vector_stops.end(),
               [](const Stop &a,const Stop &b){
-        return a.Name<b.Name;
+        return a.name<b.name;
     });
 
     for(auto stop:vector_stops){
-        ordered_stopIDs.push_back(stop.StopID);
+        ordered_stopIDs.push_back(stop.stopID);
     }
         return ordered_stopIDs;
 }
@@ -138,12 +138,12 @@ std::vector<StopID> Datastructures::stops_coord_order()
 
     std::sort(vector_stops.begin(), vector_stops.end(),
               [](const Stop &a,const Stop &b){
-        return distance_from_origin(a.Coord)<distance_from_origin(b.Coord);
+        return distance_from_origin(a.coord)<distance_from_origin(b.coord);
     });
 
 
     for(auto stop:vector_stops){
-        ordered_stopIDs.push_back(stop.StopID);
+        ordered_stopIDs.push_back(stop.stopID);
     }
     return ordered_stopIDs;
 }
@@ -156,8 +156,8 @@ StopID Datastructures::min_coord()
     double min_distance = 1000;
 
     for(auto stop:stops_){
-        if(distance_from_origin(stop.second.Coord)< min_distance){
-            min_distance = distance_from_origin(stop.second.Coord);
+        if(distance_from_origin(stop.second.coord)< min_distance){
+            min_distance = distance_from_origin(stop.second.coord);
             stopId = stop.first;
         }
 
@@ -173,8 +173,8 @@ StopID Datastructures::max_coord()
     double max_distance = -1;
 
     for(auto stop:stops_){
-        if(distance_from_origin(stop.second.Coord)> max_distance){
-            max_distance = distance_from_origin(stop.second.Coord);
+        if(distance_from_origin(stop.second.coord)> max_distance){
+            max_distance = distance_from_origin(stop.second.coord);
             stopId = stop.first;
         }
 
@@ -187,7 +187,7 @@ std::vector<StopID> Datastructures::find_stops(Name const& name)
 
     for(auto stop:stops_){
 
-        if(name == stop.second.Name){
+        if(name == stop.second.name){
             stopIDsWithSameName.push_back(stop.first);
         }
     }
@@ -198,7 +198,7 @@ bool Datastructures::change_stop_name(StopID id, const Name& newname)
 {
 
     if(stops_.find(id)!=stops_.end()){
-        stops_.at(id).Name = newname;
+        stops_.at(id).name = newname;
         return true;
     }else{
         return false;
@@ -210,8 +210,8 @@ bool Datastructures::change_stop_coord(StopID id, Coord newcoord)
 {
 
     if(stops_.find(id)!=stops_.end()){
-        stops_.at(id).Coord.x = newcoord.x;
-        stops_.at(id).Coord.y = newcoord.y;
+        stops_.at(id).coord.x = newcoord.x;
+        stops_.at(id).coord.y = newcoord.y;
         return true;
     }else{
         return false;
