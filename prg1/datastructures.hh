@@ -60,115 +60,144 @@ public:
     Datastructures();
     ~Datastructures();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(1)
+    //     * According to documentatioin unordered_map size algorithm is O(1).
     int stop_count();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(n)
+    //     * linear in the size of the containers
     void clear_all();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
-    /*!
-     * \brief all_stops, luo stops tietorakenteesta vectorin johon vie stopID:t
-     * \return palautattaa luodun stopIDs vectorin, tai constin NO_STOPS jos
-     * stopIDs size on 0
-     */
+
+
+    //     * O(n)
+    //     * linear in the size of the containers
     std::vector<StopID> all_stops();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(N), Θ(1)
+    //     * function uses two algorithms (find and insert) which are
+    //     * both O(N),Θ(1).
     bool add_stop(StopID id, Name const& name, Coord xy);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(N), Θ(1)
+    //     * function uses (find and at) algorithms that are both O(N), Θ(1)
     Name get_stop_name(StopID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(N), Θ(1)
+    //     * function uses (find and at) algorithms that are both O(N), Θ(1)
     Coord get_stop_coord(StopID id);
 
-    // We recommend you implement the operations below only after implementing the ones above
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+    //     * O(N*log(N))
+    //     * Includes two seperate for loops that are O(N)
+    //     * and std::sort that is nlogn
     std::vector<StopID> stops_alphabetically();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(N*log(N))
+    //     * Includes two seperate for loops that are O(N)
+    //     * and std::sort that is nlogn
     std::vector<StopID> stops_coord_order();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(N)
+    //     * Linear to size of stl
     StopID min_coord();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(N)
+    //     * Linear to size of stl
     StopID max_coord();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(N)
+    //     * Linear to size of stl
     std::vector<StopID> find_stops(Name const& name);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(N), Θ(1)
+    //     * function uses (find and at) algorithms that are both O(N), Θ(1)
     bool change_stop_name(StopID id, Name const& newname);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(N), Θ(1)
+    //     * function uses (find and at) algorithms that are both O(N), Θ(1)
     bool change_stop_coord(StopID id, Coord newcoord);
 
-    // We recommend you implement the operations below only after implementing the ones above
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+    //     * O(N), Θ(1)
+    //     * function uses two algorithms (find and insert) which are both O(N),
+    //     * Θ(1).
     bool add_region(RegionID id, Name const& name);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(N), Θ(1)
+    //     * function uses two algorithms (find and at) which are both O(N),Θ(1)
     Name get_region_name(RegionID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(N)
+    //     * Linear to size of stl
     std::vector<RegionID> all_regions();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(N), Θ(1)
+    //     * function uses two algorithms (find and at) which are both O(N),Θ(1)
     bool add_stop_to_region(StopID id, RegionID parentid);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+    //     * O(N), Θ(1)
+    //     * function uses two algorithms (find and at) which are both O(N),Θ(1)
     bool add_subregion_to_region(RegionID id, RegionID parentid);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
+
+
+    //     * O(N)
+    //     * Linear to size of stl
     std::vector<RegionID> stop_regions(StopID id);
+
+
+
 
     // Non-compulsory operations
 
-    // Estimate of performance:
-    // Short rationale for estimate:
     void creation_finished();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
     std::pair<Coord, Coord> region_bounding_box(RegionID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
     std::vector<StopID> stops_closest_to(StopID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
     bool remove_stop(StopID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+
     RegionID stops_common_region(StopID id1, StopID id2);
 
 private:
-    // Add stuff needed for your class implementation here
+
 
     struct Stop{
         StopID StopID;
@@ -194,6 +223,7 @@ private:
 
     std::unordered_map<StopID,Stop> stops_;
     std::vector<StopID> stopIDs_;
+
     std::vector<StopID> orderedStopIDsByName;
 
 };
