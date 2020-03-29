@@ -331,12 +331,15 @@ void Datastructures::creation_finished()
 
 std::pair<Coord,Coord> Datastructures::region_bounding_box(RegionID id)
 {
+
     // Replace this comment and the line below with your implementation
     return {NO_COORD, NO_COORD};
 }
 
 std::vector<StopID> Datastructures::stops_closest_to(StopID id)
 {
+
+
     // Replace this comment and the line below with your implementation
     return {NO_STOP};
 }
