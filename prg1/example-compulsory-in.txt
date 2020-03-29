@@ -13,5 +13,5 @@ find_stops Two
 read "example-regions.txt"
 all_regions
 region_name S
-region_bounding_box L
+stop_regions 1
 quit

@@ -122,17 +122,6 @@ using std::back_inserter;
 
 string const MainProgram::PROMPT = "> ";
 
-void MainProgram::test_get_functions(StopID id)
-{
-    ds_.get_stop_name(id);
-    ds_.get_stop_coord(id);
-    if (random_stops_added_ > 0)
-    {
-        auto regid = n_to_strid(random<decltype(random_stops_added_)>(0, (random_stops_added_-1)/10+1));
-        ds_.get_region_name(regid);
-    }
-}
-
 MainProgram::CmdResult MainProgram::cmd_add_stop(std::ostream& /*output*/, MatchIter begin, MatchIter end)
 {
     string idstr = *begin++;
@@ -141,7 +130,7 @@ MainProgram::CmdResult MainProgram::cmd_add_stop(std::ostream& /*output*/, Match
     string ystr = *begin++;
     assert( begin == end && "Impossible number of parameters!");
 
-    StopID id = convert_string_to<int>(idstr);
+    StopID id = convert_string_to<StopID>(idstr);
     Coord xy = {convert_string_to<int>(xstr), convert_string_to<int>(ystr)};
 
     bool success = ds_.add_stop(id, name, xy);
@@ -155,7 +144,7 @@ MainProgram::CmdResult MainProgram::cmd_stop_name(std::ostream &output, MainProg
     string stopidstr = *begin++;
     assert( begin == end && "Impossible number of parameters!");
 
-    StopID stopid = convert_string_to<int>(stopidstr);
+    StopID stopid = convert_string_to<StopID>(stopidstr);
 
     auto result = ds_.get_stop_name(stopid);
     if (result == NO_NAME)
@@ -169,12 +158,21 @@ MainProgram::CmdResult MainProgram::cmd_stop_name(std::ostream &output, MainProg
     }
 }
 
+void MainProgram::test_stop_name()
+{
+    if (random_stops_added_ > 0) // Don't do anything if there's no beacons
+    {
+        StopID id = random<decltype(random_stops_added_)>(0, random_stops_added_);
+        ds_.get_stop_name(id);
+    }
+}
+
 MainProgram::CmdResult MainProgram::cmd_stop_coord(std::ostream &output, MainProgram::MatchIter begin, MainProgram::MatchIter end)
 {
     string stopidstr = *begin++;
     assert( begin == end && "Impossible number of parameters!");
 
-    StopID stopid = convert_string_to<int>(stopidstr);
+    StopID stopid = convert_string_to<StopID>(stopidstr);
 
     auto result = ds_.get_stop_coord(stopid);
     if (result == NO_COORD)
@@ -187,6 +185,15 @@ MainProgram::CmdResult MainProgram::cmd_stop_coord(std::ostream &output, MainPro
         print_coord(result, output);
         output << endl;
         return {ResultType::STOPIDLIST, MainProgram::CmdResultStopIDs{NO_REGION, {stopid}}};
+    }
+}
+
+void MainProgram::test_stop_coord()
+{
+    if (random_stops_added_ > 0) // Don't do anything if there's no beacons
+    {
+        StopID id = random<decltype(random_stops_added_)>(0, random_stops_added_);
+        ds_.get_stop_coord(id);
     }
 }
 
@@ -231,6 +238,15 @@ MainProgram::CmdResult MainProgram::cmd_region_name(std::ostream &output, MainPr
     }
 }
 
+void MainProgram::test_region_name()
+{
+    if (random_stops_added_ > 0)
+    {
+        auto regid = n_to_strid(random<decltype(random_stops_added_)>(0, (random_stops_added_-1)/10+1));
+        ds_.get_region_name(regid);
+    }
+}
+
 MainProgram::CmdResult MainProgram::cmd_creation_finished(std::ostream& output, MainProgram::MatchIter /*begin*/, MainProgram::MatchIter /*end*/)
 {
     ds_.creation_finished();
@@ -245,7 +261,7 @@ MainProgram::CmdResult MainProgram::cmd_change_stop_name(std::ostream& /*output*
     string newname = *begin++;
     assert( begin == end && "Impossible number of parameters!");
 
-    StopID id = convert_string_to<int>(idstr);
+    StopID id = convert_string_to<StopID>(idstr);
 
     bool success = ds_.change_stop_name(id, newname);
 
@@ -260,7 +276,6 @@ void MainProgram::test_change_stop_name()
       StopID id = random<decltype(random_stops_added_)>(0, random_stops_added_);
       auto newname = n_to_name(random<decltype(random_stops_added_)>(0, random_stops_added_));
       ds_.change_stop_name(id, newname);
-      test_get_functions(id);
   }
 }
 
@@ -272,7 +287,7 @@ MainProgram::CmdResult MainProgram::cmd_change_stop_coord(std::ostream& /*output
 
     assert( begin == end && "Impossible number of parameters!");
 
-    StopID id = convert_string_to<int>(idstr);
+    StopID id = convert_string_to<StopID>(idstr);
     int x = convert_string_to<int>(xstr);
     int y = convert_string_to<int>(ystr);
 
@@ -290,7 +305,6 @@ void MainProgram::test_change_stop_coord()
         auto x = random(0, 1000);
         auto y = random(0, 1000);
         ds_.change_stop_coord(id, {x, y});
-        test_get_functions(id);
     }
 }
 
@@ -300,7 +314,7 @@ MainProgram::CmdResult MainProgram::cmd_add_stop_to_region(std::ostream& output,
     string regionidstr = *begin++;
     assert( begin == end && "Impossible number of parameters!");
 
-    StopID stopid = convert_string_to<int>(stopidstr);
+    StopID stopid = convert_string_to<StopID>(stopidstr);
     RegionID regionid = regionidstr;
 
     view_dirty = true;
@@ -351,7 +365,7 @@ MainProgram::CmdResult MainProgram::cmd_stop_regions(std::ostream& output, MainP
     string stopidstr = *begin++;
     assert( begin == end && "Impossible number of parameters!");
 
-    StopID stopid = convert_string_to<int>(stopidstr);
+    StopID stopid = convert_string_to<StopID>(stopidstr);
 
     output << "Regions for stop ";
     print_stop(stopid, output);
@@ -367,7 +381,6 @@ void MainProgram::test_stop_regions()
     {
         auto id = n_to_id(random<decltype(random_stops_added_)>(0, random_stops_added_));
         ds_.stop_regions(id);
-        test_get_functions(id);
     }
 }
 
@@ -376,7 +389,7 @@ MainProgram::CmdResult MainProgram::cmd_stops_closest_to(std::ostream& /*output*
   string stopidstr = *begin++;
   assert( begin == end && "Impossible number of parameters!");
 
-  StopID stopid = convert_string_to<int>(stopidstr);
+  StopID stopid = convert_string_to<StopID>(stopidstr);
 
   auto result = ds_.stops_closest_to(stopid);
   return {ResultType::STOPIDLIST, CmdResultStopIDs{NO_REGION, result}};
@@ -388,7 +401,6 @@ void MainProgram::test_stops_closest_to()
     {
         auto id = n_to_id(random<decltype(random_stops_added_)>(0, random_stops_added_));
         ds_.stop_regions(id);
-        test_get_functions(id);
     }
 }
 
@@ -426,8 +438,8 @@ MainProgram::CmdResult MainProgram::cmd_stops_common_region(std::ostream &output
     string stopid2str = *begin++;
     assert( begin == end && "Impossible number of parameters!");
 
-    StopID stopid1 = convert_string_to<int>(stopid1str);
-    StopID stopid2 = convert_string_to<int>(stopid2str);
+    StopID stopid1 = convert_string_to<StopID>(stopid1str);
+    StopID stopid2 = convert_string_to<StopID>(stopid2str);
 
     auto result = ds_.stops_common_region(stopid1, stopid2);
     if (result == NO_REGION)
@@ -444,7 +456,6 @@ void MainProgram::test_stops_common_region()
         auto id1 = n_to_id(random<decltype(random_stops_added_)>(0, random_stops_added_));
         auto id2 = n_to_id(random<decltype(random_stops_added_)>(0, random_stops_added_));
         ds_.stops_common_region(id1, id2);
-        test_get_functions(id1);
     }
 }
 
@@ -478,7 +489,7 @@ void MainProgram::test_remove_stop()
     }
 }
 
-void MainProgram::add_random_stops(unsigned int size, Coord min, Coord max)
+void MainProgram::add_random_stops_regions(unsigned int size, Coord min, Coord max)
 {
     for (unsigned int i = 0; i < size; ++i)
     {
@@ -541,9 +552,9 @@ MainProgram::CmdResult MainProgram::cmd_random_add(std::ostream& output, MatchIt
             // Find out bounding box
             min = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
             max = {std::numeric_limits<int>::min(), std::numeric_limits<int>::min()};
-            for (auto const& beacon : stops)
+            for (auto  stop : stops)
             {
-                auto [x,y] = ds_.get_stop_coord(beacon);
+                auto [x,y] = ds_.get_stop_coord(stop);
                 if (x < min.x) { min.x = x; }
                 if (y < min.y) { min.y = y; }
                 if (x > max.x) { max.x = x; }
@@ -558,7 +569,7 @@ MainProgram::CmdResult MainProgram::cmd_random_add(std::ostream& output, MatchIt
         max = def_max;
     }
 
-    add_random_stops(size, min, max);
+    add_random_stops_regions(size, min, max);
 
     output << "Added: " << size << " stops." << endl;
 
@@ -567,9 +578,9 @@ MainProgram::CmdResult MainProgram::cmd_random_add(std::ostream& output, MatchIt
     return {};
 }
 
-void MainProgram::test_random_add_stops()
+void MainProgram::test_random_add()
 {
-    add_random_stops(1);
+    add_random_stops_regions(1);
 }
 
 MainProgram::CmdResult MainProgram::cmd_randseed(std::ostream& output, MatchIter begin, MatchIter end)
@@ -919,21 +930,25 @@ void MainProgram::test_find_stops()
     }
 }
 
+string const stpidx = "([0-9]+)";
+string const regidx = "([a-zA-Z0-9]+)";
+string const routeidx = "([a-zA-Z0-9]+)";
+string const namex = "([a-zA-Z0-9 -]+)";
+string const numx = "([0-9]+)";
+string const coordx = "\\([[:space:]]*([0-9]+)[[:space:]]*,[[:space:]]*([0-9]+)[[:space:]]*\\)";
+string const wsx = "[[:space:]]+";
+
 vector<MainProgram::CmdInfo> MainProgram::cmds_ =
 {
-    {"add_stop", "ID Name (x,y)",
-     "([0-9]+)[[:space:]]+([a-zA-Z0-9 -]+)[[:space:]]+\\([[:space:]]*([0-9]+)[[:space:]]*,[[:space:]]*([0-9]+)[[:space:]]*\\)",
-     &MainProgram::cmd_add_stop, nullptr },
-    {"random_add", "number_of_stops_to_add  (minx,miny) (maxx,maxy) (coordinates optional)",
-     "([0-9]+)(?:[[:space:]]+\\([[:space:]]*([0-9]+)[[:space:]]*,[[:space:]]*([0-9]+)[[:space:]]*\\)[[:space:]]+\\([[:space:]]*([0-9]+)[[:space:]]*,[[:space:]]*([0-9]+)[[:space:]]*\\))?",
-     &MainProgram::cmd_random_add, &MainProgram::test_random_add_stops },
+    {"add_stop", "ID Name (x,y)", stpidx+wsx+namex+wsx+coordx, &MainProgram::cmd_add_stop, nullptr },
+    {"random_add", "number_of_stops_to_add  (minx,miny) (maxx,maxy) (coordinates optional)", numx+"(?:"+wsx+coordx+wsx+coordx+")?",
+     &MainProgram::cmd_random_add, &MainProgram::test_random_add },
     {"all_stops", "", "", &MainProgram::cmd_all_stops, nullptr },
-    {"stop_name", "ID", "([0-9]+)", &MainProgram::cmd_stop_name, nullptr },
-    {"stop_coord", "ID", "([0-9]+)", &MainProgram::cmd_stop_coord, nullptr },
-    {"add_region", "ID Name",
-     "([a-zA-Z0-9]+)[[:space:]]+([a-zA-Z0-9 -]+)", &MainProgram::cmd_add_region, nullptr },
+    {"stop_name", "ID", stpidx, &MainProgram::cmd_stop_name, &MainProgram::test_stop_name },
+    {"stop_coord", "ID", stpidx, &MainProgram::cmd_stop_coord, &MainProgram::test_stop_coord },
+    {"add_region", "ID Name", regidx+wsx+namex, &MainProgram::cmd_add_region, nullptr },
     {"all_regions", "", "", &MainProgram::cmd_all_regions, nullptr },
-    {"region_name", "RegionID", "([a-zA-Z0-9]+)", &MainProgram::cmd_region_name, nullptr },
+    {"region_name", "RegionID", regidx, &MainProgram::cmd_region_name, &MainProgram::test_region_name },
     {"creation_finished", "", "", &MainProgram::cmd_creation_finished, nullptr },
     {"stop_count", "", "", &MainProgram::cmd_stop_count, nullptr },
     {"clear_all", "", "", &MainProgram::cmd_clear_all, nullptr },
@@ -941,29 +956,24 @@ vector<MainProgram::CmdInfo> MainProgram::cmds_ =
     {"stops_coord_order", "", "", &MainProgram::NoParStopListCmd<&Datastructures::stops_coord_order>, &MainProgram::NoParStopListTestCmd<&Datastructures::stops_coord_order> },
     {"min_coord", "", "", &MainProgram::NoParStopCmd<&Datastructures::min_coord>, &MainProgram::NoParStopTestCmd<&Datastructures::min_coord> },
     {"max_coord", "", "", &MainProgram::NoParStopCmd<&Datastructures::max_coord>, &MainProgram::NoParStopTestCmd<&Datastructures::max_coord> },
-    {"stops_closest_to", "ID", "([0-9]+)", &MainProgram::cmd_stops_closest_to, &MainProgram::test_stops_closest_to },
-    {"stops_common_region", "ID1 ID2", "([0-9]+)[[:space:]]+([0-9]+)", &MainProgram::cmd_stops_common_region, &MainProgram::test_stops_common_region },
-    {"remove_stop", "ID", "([0-9]+)", &MainProgram::cmd_remove_stop, &MainProgram::test_remove_stop },
-    {"find_stops", "name", "([a-zA-Z0-9 ]+)", &MainProgram::cmd_find_stops, &MainProgram::test_find_stops },
-    {"change_stop_name", "ID newname", "([0-9]+)[[:space:]]+([a-zA-Z ]+)", &MainProgram::cmd_change_stop_name, &MainProgram::test_change_stop_name },
-    {"change_stop_coord", "ID (x,y)", "([0-9]+)[[:space:]]+\\([[:space:]]*([0-9]+)[[:space:]]*,[[:space:]]*([0-9]+)[[:space:]]*\\)",
-     &MainProgram::cmd_change_stop_coord, &MainProgram::test_change_stop_coord },
-    {"add_stop_to_region", "StopID RegionID",
-     "([0-9]+)[[:space:]]+([a-zA-Z0-9]+)", &MainProgram::cmd_add_stop_to_region, nullptr },
-    {"add_subregion_to_region", "SubregionID RegionID",
-     "([a-zA-Z0-9]+)[[:space:]]+([a-zA-Z0-9]+)", &MainProgram::cmd_add_subregion_to_region, nullptr },
-    {"stop_regions", "StopID", "([0-9]+)", &MainProgram::cmd_stop_regions, &MainProgram::test_stop_regions },
-    {"region_bounding_box", "RegionID", "([A-Za-z0-9]+)", &MainProgram::cmd_region_bounding_box, &MainProgram::test_region_bounding_box },
+    {"stops_closest_to", "ID", stpidx, &MainProgram::cmd_stops_closest_to, &MainProgram::test_stops_closest_to },
+    {"stops_common_region", "ID1 ID2", stpidx+wsx+stpidx, &MainProgram::cmd_stops_common_region, &MainProgram::test_stops_common_region },
+    {"remove_stop", "ID", stpidx, &MainProgram::cmd_remove_stop, &MainProgram::test_remove_stop },
+    {"find_stops", "name", namex, &MainProgram::cmd_find_stops, &MainProgram::test_find_stops },
+    {"change_stop_name", "ID newname", stpidx+wsx+namex, &MainProgram::cmd_change_stop_name, &MainProgram::test_change_stop_name },
+    {"change_stop_coord", "ID (x,y)", stpidx+wsx+coordx, &MainProgram::cmd_change_stop_coord, &MainProgram::test_change_stop_coord },
+    {"add_stop_to_region", "StopID RegionID", stpidx+wsx+regidx, &MainProgram::cmd_add_stop_to_region, nullptr },
+    {"add_subregion_to_region", "SubregionID RegionID", regidx+wsx+regidx, &MainProgram::cmd_add_subregion_to_region, nullptr },
+    {"stop_regions", "StopID", stpidx, &MainProgram::cmd_stop_regions, &MainProgram::test_stop_regions },
+    {"region_bounding_box", "RegionID", regidx, &MainProgram::cmd_region_bounding_box, &MainProgram::test_region_bounding_box },
     {"quit", "", "", nullptr, nullptr },
     {"help", "", "", &MainProgram::help_command, nullptr },
-    {"read", "\"in-filename\"",
-     "\"([-a-zA-Z0-9 ./:_]+)\"", &MainProgram::cmd_read, nullptr },
-    {"testread", "\"in-filename\" \"out-filename\"",
-     "\"([-a-zA-Z0-9 ./:_]+)\"[[:space:]]+\"([-a-zA-Z0-9 ./:_]+)\"", &MainProgram::cmd_testread, nullptr },
+    {"read", "\"in-filename\"", "\"([-a-zA-Z0-9 ./:_]+)\"", &MainProgram::cmd_read, nullptr },
+    {"testread", "\"in-filename\" \"out-filename\"", "\"([-a-zA-Z0-9 ./:_]+)\""+wsx+"\"([-a-zA-Z0-9 ./:_]+)\"", &MainProgram::cmd_testread, nullptr },
     {"perftest", "cmd1/all/compulsory[;cmd2;cmd3...] timeout repeat_count n1[;n2;n3...] (parts in [] are optional)",
-     "([0-9a-zA-Z_]+(?:;[0-9a-zA-Z_]+)*)[[:space:]]+([0-9]+)[[:space:]]+([0-9]+)[[:space:]]+([0-9]+(?:;[0-9]+)*)", &MainProgram::cmd_perftest, nullptr },
+     "([0-9a-zA-Z_]+(?:;[0-9a-zA-Z_]+)*)"+wsx+numx+wsx+numx+wsx+"([0-9]+(?:;[0-9]+)*)", &MainProgram::cmd_perftest, nullptr },
     {"stopwatch", "on/off/next (one of these)", "(?:(on)|(off)|(next))", &MainProgram::cmd_stopwatch, nullptr },
-    {"random_seed", "new-random-seed-integer", "([0-9]+)", &MainProgram::cmd_randseed, nullptr },
+    {"random_seed", "new-random-seed-integer", numx, &MainProgram::cmd_randseed, nullptr },
     {"#", "comment text", ".*", &MainProgram::cmd_comment, nullptr },
 };
 
@@ -1079,7 +1089,7 @@ MainProgram::CmdResult MainProgram::cmd_perftest(std::ostream& output, MatchIter
         // Add random beacons (+ light sources)
         for (unsigned int i = 0; i < n / 1000; ++i)
         {
-            add_random_stops(1000);
+            add_random_stops_regions(1000);
 
             stopwatch.stop();
             if (stopwatch.elapsed() >= timeout)
@@ -1098,7 +1108,7 @@ MainProgram::CmdResult MainProgram::cmd_perftest(std::ostream& output, MatchIter
         }
         if (stop) { break; }
 
-        add_random_stops(n % 1000);
+        add_random_stops_regions(n % 1000);
 
         auto addsec = stopwatch.elapsed();
         output << setw(12) << addsec << " , " << flush;
@@ -1109,6 +1119,7 @@ MainProgram::CmdResult MainProgram::cmd_perftest(std::ostream& output, MatchIter
             break;
         }
 
+        ds_.creation_finished();
         for (unsigned int repeat = 0; repeat < repeat_count; ++repeat)
         {
             auto cmdpos = random(testfuncs.begin(), testfuncs.end());
@@ -1220,7 +1231,7 @@ bool MainProgram::command_parse_line(string inputline, ostream& output)
                     }
                     case ResultType::STOPIDLIST:
                     {
-                        auto [region, stops] = std::get<CmdResultStopIDs>(result.second);
+                        auto& [region, stops] = std::get<CmdResultStopIDs>(result.second);
                         if (region != NO_REGION)
                         {
                             output << "Region: ";
@@ -1457,11 +1468,11 @@ string MainProgram::n_to_strid(unsigned long n)
  return name;
 }
 
-unsigned long int MainProgram::n_to_id(unsigned long int n)
+StopID MainProgram::n_to_id(unsigned long int n)
 {
     unsigned long int hash = prime2_*n + prime1_;
 
-    return hash;
+    return hash % static_cast<unsigned long int>(std::numeric_limits<StopID>::max());
 }
 
 void MainProgram::init_regexs()
@@ -1476,10 +1487,10 @@ void MainProgram::init_regexs()
 
         cmd.param_regex = regex(cmd.param_regex_str+"[[:space:]]*", std::regex_constants::ECMAScript | std::regex_constants::optimize);
     }
-    cmds_regex_str += ")(?:[[:space:]]*$|[[:space:]]+(.*))";
+    cmds_regex_str += ")(?:[[:space:]]*$|"+wsx+"(.*))";
     cmds_regex_ = regex(cmds_regex_str, std::regex_constants::ECMAScript | std::regex_constants::optimize);
-    stops_regex_ = regex("([0-9]+)[[:space:]]?", std::regex_constants::ECMAScript | std::regex_constants::optimize);
-    times_regex_ = regex("[[:space:]]+([0-9][0-9]):([0-9][0-9]):([0-9][0-9])", std::regex_constants::ECMAScript | std::regex_constants::optimize);
+    stops_regex_ = regex(stpidx+"[[:space:]]?", std::regex_constants::ECMAScript | std::regex_constants::optimize);
+    times_regex_ = regex(wsx+"([0-9][0-9]):([0-9][0-9]):([0-9][0-9])", std::regex_constants::ECMAScript | std::regex_constants::optimize);
     commands_regex_ = regex("([0-9a-zA-Z_]+);?", std::regex_constants::ECMAScript | std::regex_constants::optimize);
-    sizes_regex_ = regex("([0-9]+);?", std::regex_constants::ECMAScript | std::regex_constants::optimize);
+    sizes_regex_ = regex(numx+";?", std::regex_constants::ECMAScript | std::regex_constants::optimize);
 }

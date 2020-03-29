@@ -91,7 +91,8 @@ Six: pos=(2,9), id=6
 > region_name S
 Region ID S has name 'Small'
 Small: id=S
-> region_bounding_box L
-Stops in region Large (and subregions) are within (0,1)-(7,9)
-Large: id=L
+> stop_regions 1
+Regions for stop One: pos=(1,1), id=1
+1. Small: id=S
+2. Large: id=L
 > quit
