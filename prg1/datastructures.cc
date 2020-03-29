@@ -120,13 +120,10 @@ std::vector<StopID> Datastructures::stops_alphabetically()
     for(auto stop:vector_stops){
         ordered_stopIDs.push_back(stop.StopID);
     }
-    if(ordered_stopIDs.size() == 0){
-        return {NO_STOP};
-    }else{
         return ordered_stopIDs;
-    }
-
 }
+
+
 
 std::vector<StopID> Datastructures::stops_coord_order()
 {
@@ -148,21 +145,15 @@ std::vector<StopID> Datastructures::stops_coord_order()
     for(auto stop:vector_stops){
         ordered_stopIDs.push_back(stop.StopID);
     }
-    if(ordered_stopIDs.size() == 0){
-        return {NO_STOP};
-    }else{
-        return ordered_stopIDs;
-    }
-
+    return ordered_stopIDs;
 }
+
+
 
 StopID Datastructures::min_coord()
 {
     StopID stopId = -1;
     double min_distance = 1000;
-    if(stops_.size()==0){
-        return NO_STOP;
-    }
 
     for(auto stop:stops_){
         if(distance_from_origin(stop.second.Coord)< min_distance){
@@ -180,9 +171,6 @@ StopID Datastructures::max_coord()
 {
     StopID stopId = -1;
     double max_distance = -1;
-    if(stops_.size()==0){
-        return NO_STOP;
-    }
 
     for(auto stop:stops_){
         if(distance_from_origin(stop.second.Coord)> max_distance){
@@ -203,9 +191,7 @@ std::vector<StopID> Datastructures::find_stops(Name const& name)
             stopIDsWithSameName.push_back(stop.first);
         }
     }
-    if(stopIDsWithSameName.size()==0){
-        return {NO_STOP};
-    } return stopIDsWithSameName;
+    return stopIDsWithSameName;
 }
 
 bool Datastructures::change_stop_name(StopID id, const Name& newname)
@@ -264,13 +250,9 @@ std::vector<RegionID> Datastructures::all_regions()
     for(auto region:regions_){
         regionIDs_.push_back(region.first);
     }
-    if(regionIDs_.size()==0){
-        return {NO_REGION};
-    }else{
         return regionIDs_;
-    }
-
 }
+
 
 bool Datastructures::add_stop_to_region(StopID id, RegionID parentid)
 {
